@@ -1,7 +1,8 @@
 
 
 // Should maxSize have the option to be set by the user?
-
+// How do we test our code?
+// Is getInstance() meant to be static
 
 
 import org.apache.log4j.spi.LoggingEvent;
@@ -13,10 +14,16 @@ import java.util.List;
  * exceptions in a concise and manageable manner
  */
 public class MemAppender {
-    private MemAppender single_instance = null;
+    private static MemAppender single_instance = null;
     private List logEntries;
     private int maxSize;
     private int numberOfDiscardedLogs;
+
+//  WriterAppender appender = new WriterAppender();
+//  Writer writer = new StringWriter();
+//  appender.setWriter(writer);
+//  appender.setLayout(new SimpleLayout());
+//  Logger.getRootLogger().addAppender(appender);
 
     private MemAppender() {
         this.logEntries = new ArrayList();
@@ -29,7 +36,7 @@ public class MemAppender {
      * If an instance already exists, then the current existing instance is returned     *
      * @return an instance of MemAppender
      */
-    public MemAppender getInstance() {
+    public static MemAppender getInstance() {
         if (single_instance == null) {
             single_instance = new MemAppender();
         }
@@ -65,9 +72,5 @@ public class MemAppender {
         return numberOfDiscardedLogs;
     }
 
-//    public static void main(String[] args) {
-//        BasicConfigurator.configure();
-//
-//        Logger logger = Logger.getLogger();
-//    }
+
 }
