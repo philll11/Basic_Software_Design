@@ -1,10 +1,9 @@
 
 
-// Should maxSize have the option to be set by the user?
 // How do we test our code?
-// Is getInstance() meant to be static
 
-
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,20 +12,16 @@ import java.util.List;
  * The MemAppender class provides logger functionality that captures system
  * exceptions in a concise and manageable manner
  */
-public class MemAppender {
+public class MemAppender extends AppenderSkeleton {
     private static MemAppender single_instance = null;
+    private Layout layout;
     private List logEntries;
     private int maxSize;
     private int numberOfDiscardedLogs;
 
-//  WriterAppender appender = new WriterAppender();
-//  Writer writer = new StringWriter();
-//  appender.setWriter(writer);
-//  appender.setLayout(new SimpleLayout());
-//  Logger.getRootLogger().addAppender(appender);
-
-    private MemAppender() {
+    private MemAppender(String _pattern) {
         this.logEntries = new ArrayList();
+        this.layout = new VelocityLayout(_pattern);
         this.maxSize = 100;
         this.numberOfDiscardedLogs = 0;
     }
@@ -36,24 +31,21 @@ public class MemAppender {
      * If an instance already exists, then the current existing instance is returned     *
      * @return an instance of MemAppender
      */
-    public static MemAppender getInstance() {
+    public static MemAppender getInstance(String _pattern) {
         if (single_instance == null) {
-            single_instance = new MemAppender();
+            single_instance = new MemAppender(_pattern);
         }
         return single_instance;
     }
 
 
-
-    public void storeLogEntries(LoggingEvent event) {
+    protected void append(LoggingEvent loggingEvent) {
         if(logEntries.size() >= maxSize) {
             logEntries.remove(0);
             numberOfDiscardedLogs += 1;
         }
-        logEntries.add(event);
+        logEntries.add(layout.format(loggingEvent));
     }
-
-
 
     /**
      * Returns the class property logEntries as a list of log enteries.
@@ -73,4 +65,11 @@ public class MemAppender {
     }
 
 
+    public void close() {
+
+    }
+
+    public boolean requiresLayout() {
+        return false;
+    }
 }
