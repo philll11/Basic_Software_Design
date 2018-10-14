@@ -1,3 +1,5 @@
+package nz.ac.massey.cs.sdc.assign1.s15232331;
+
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.velocity.Template;
@@ -29,7 +31,7 @@ public class VelocityLayout extends Layout {
         Template template = velocityEnginee.getTemplate(pattern);
 
         velocityContext.put("c", loggingEvent.getLoggerName());
-        velocityContext.put("d", loggingEvent.toString());
+        velocityContext.put("d", loggingEvent.getTimeStamp());
         velocityContext.put("m", loggingEvent.getMessage());
         velocityContext.put("p", loggingEvent.getLevel());
         velocityContext.put("t", loggingEvent.getThreadName());

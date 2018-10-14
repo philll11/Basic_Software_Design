@@ -1,3 +1,5 @@
+package nz.ac.massey.cs.sdc.assign1.s15232331;
+
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;

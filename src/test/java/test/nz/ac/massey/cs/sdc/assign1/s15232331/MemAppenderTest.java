@@ -1,3 +1,5 @@
+package test.nz.ac.massey.cs.sdc.assign1.s15232331;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

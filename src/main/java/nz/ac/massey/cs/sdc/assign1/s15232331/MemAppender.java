@@ -1,4 +1,4 @@
-
+package nz.ac.massey.cs.sdc.assign1.s15232331;
 
 // How do we test our code?
 
