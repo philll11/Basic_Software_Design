@@ -15,7 +15,7 @@ import java.util.List;
 public class MemAppender extends AppenderSkeleton {
     private static MemAppender single_instance = null;
     private Layout layout;
-    private List logEntries;
+    private List<LoggingEvent> logEntries;
     private int maxSize;
     private int numberOfDiscardedLogs;
 
@@ -44,14 +44,14 @@ public class MemAppender extends AppenderSkeleton {
             logEntries.remove(0);
             numberOfDiscardedLogs += 1;
         }
-        logEntries.add(layout.format(loggingEvent));
+        logEntries.add(loggingEvent);
     }
 
     /**
      * Returns the class property logEntries as a list of log enteries.
      * @return a list of log entries
      */
-    public List getCurrentLogs() {
+    public List<LoggingEvent> getCurrentLogs() {
         return logEntries;
     }
 
