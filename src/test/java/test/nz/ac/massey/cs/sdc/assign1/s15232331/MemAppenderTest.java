@@ -1,12 +1,16 @@
 /**
  * Is getInstanceTestToVerifyOnlyOneInstanceIsCreated() correctly evaluating whether the when MemAppenders are the same object?
  * How do we test using different Appenders
+ * I have junit dependacies in my pom.xml file, is that allowed?
+ * In StressTest.java, do we have to include assertEquals statements for each test to be valid?
+ * In StressTest.java, how do we reset MemAppender each time we run a test
  */
 
 
 package test.nz.ac.massey.cs.sdc.assign1.s15232331;
 
 import nz.ac.massey.cs.sdc.assign1.s15232331.MemAppender;
+import nz.ac.massey.cs.sdc.assign1.s15232331.VelocityLayout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
@@ -40,8 +44,16 @@ public class MemAppenderTest {
 
     @Test
     public void getInstanceTestToVerifyOnlyOneInstanceIsCreated() {
-        MemAppender memAppenderFirstInstance = MemAppender.getInstance(new ArrayList(), "[${t} | ${p}]: ${c} | Occured at: ${d} | Log Message: ${m} ${n}");
-        MemAppender memAppenderSecondInstance = MemAppender.getInstance(new ArrayList(), "[${t} | ${p}]: ${c} | Occured at: ${d} | Log Message: ${m} ${n}");
+        MemAppender memAppenderFirstInstance = MemAppender.getInstance(
+                new ArrayList(),
+                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}"
+                )
+        );
+        MemAppender memAppenderSecondInstance = MemAppender.getInstance(
+                new ArrayList(),
+                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}"
+                )
+        );
 
         int hc1 = memAppenderFirstInstance.hashCode();
         int hc2 = memAppenderFirstInstance.hashCode();
@@ -53,7 +65,10 @@ public class MemAppenderTest {
     @Test
     public void linkedListCapabilitiesTest() {
         logger = Logger.getLogger("AppendLogger");
-        memAppenderWithLinkedList = MemAppender.getInstance(new LinkedList(), "[${t} | ${p}]: ${c} | Occured at: ${d} | Log Message: ${m} ${n}");
+        memAppenderWithLinkedList = MemAppender.getInstance(
+                new LinkedList(),
+                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
+        );
 
         logger.addAppender(memAppenderWithLinkedList);
 
@@ -66,7 +81,10 @@ public class MemAppenderTest {
     @Test
     public void correctLoggerLevelManagementTest() {
         logger = Logger.getLogger("AppendLogger");
-        memAppenderWithArrayList = MemAppender.getInstance(new ArrayList(), "[${t} | ${p}]: ${c} | Occured at: ${d} | Log Message: ${m} ${n}");
+        memAppenderWithArrayList = MemAppender.getInstance(
+                new ArrayList(),
+                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
+        );
 
         logger.addAppender(memAppenderWithArrayList);
         logger.setLevel(Level.WARN);
@@ -90,7 +108,10 @@ public class MemAppenderTest {
     @Test
     public void rootLoggerCapabilitiesTest() {
         rootLogger = RootLogger.getRootLogger();
-        memAppenderWithArrayList = MemAppender.getInstance(new ArrayList(), "[${t} | ${p}]: ${c} | Occured at: ${d} | Log Message: ${m} ${n}");
+        memAppenderWithArrayList = MemAppender.getInstance(
+                new ArrayList(),
+                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
+        );
 
         rootLogger.addAppender(memAppenderWithArrayList);
 
@@ -99,14 +120,22 @@ public class MemAppenderTest {
         ArrayList<LoggingEvent> events = (ArrayList<LoggingEvent>) memAppenderWithArrayList.getCurrentLogs();
 
         assertEquals("root", events.get(0).getLoggerName());
-
     }
 
     @Test
-    public void getCurrentLogs() {
-    }
+    public void maxSizeListLimitCorrectImplementationTest() {
+        logger = Logger.getLogger("AppendLogger");
+        memAppenderWithArrayList = MemAppender.getInstance(
+                new ArrayList(),
+                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
+        );
 
-    @Test
-    public void getDiscardedLogCount() {
+        logger.addAppender(memAppenderWithArrayList);
+
+        for(int i = 0; i < 110; ++i) {
+            logger.debug("Debug Message");
+        }
+
+        assertEquals(100, memAppenderWithArrayList.getCurrentLogs().size());
     }
 }

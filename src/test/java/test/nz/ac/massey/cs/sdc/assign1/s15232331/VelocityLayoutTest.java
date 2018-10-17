@@ -27,7 +27,7 @@ public class VelocityLayoutTest {
 
     @Before
     public void setUp() throws Exception {
-        velocityLayout = new VelocityLayout("[${t} | ${p}]: ${c} | Occured at: ${d} | Log Message: ${m} ${n}");
+        velocityLayout = new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}");
 
         logger = Logger.getLogger("VelocityLayoutTestLogger");
         rootLogger = RootLogger.getRootLogger();
@@ -56,28 +56,28 @@ public class VelocityLayoutTest {
 
     @Test
     public void formatCorrectReturnStringTestWithDebugLevel() {
-        String expected = "[main | DEBUG]: VelocityLayoutTestLogger | Occured at: " + timeStamp + " | Log Message: This is a DEBUG log \n";
+        String expected = "[main | DEBUG]: VelocityLayoutTestLogger | Occurred at: " + timeStamp + " | Log Message: This is a DEBUG log \n";
         String actual = velocityLayout.format(loggingEventDebug);
 
         assertEquals(expected, actual);
     }
     @Test
     public void formatCorrectReturnStringTestWithErrorLevel() {
-        String expected = "[main | INFO]: VelocityLayoutTestLogger | Occured at: " + timeStamp + " | Log Message: This is a INFO log \n";
+        String expected = "[main | INFO]: VelocityLayoutTestLogger | Occurred at: " + timeStamp + " | Log Message: This is a INFO log \n";
         String actual = velocityLayout.format(loggingEventInfo);
 
         assertEquals(expected, actual);
     }
     @Test
     public void formatCorrectReturnStringTestWithInfoLevel() {
-        String expected = "[main | ERROR]: VelocityLayoutTestLogger | Occured at: " + timeStamp + " | Log Message: This is a ERROR log \n";
+        String expected = "[main | ERROR]: VelocityLayoutTestLogger | Occurred at: " + timeStamp + " | Log Message: This is a ERROR log \n";
         String actual = velocityLayout.format(loggingEventError);
 
         assertEquals(expected, actual);
     }
     @Test
     public void formatCorrectReturnStringTestWithRootLogger() {
-        String expected = "[main | DEBUG]: root | Occured at: " + timeStamp + " | Log Message: This is a DEBUG log \n";
+        String expected = "[main | DEBUG]: root | Occurred at: " + timeStamp + " | Log Message: This is a DEBUG log \n";
         String actual = velocityLayout.format(loggingEventRootLogger);
 
         assertEquals(expected, actual);

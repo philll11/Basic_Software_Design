@@ -19,9 +19,9 @@ public class MemAppender extends AppenderSkeleton {
     private int maxSize;
     private int numberOfDiscardedLogs;
 
-    private MemAppender(List _list, String _pattern) {
+    private MemAppender(List _list, Layout _layout) {
         this.logEntries = _list;
-        this.layout = new VelocityLayout(_pattern);
+        this.layout = _layout;
         this.maxSize = 100;
         this.numberOfDiscardedLogs = 0;
     }
@@ -31,13 +31,12 @@ public class MemAppender extends AppenderSkeleton {
      * If an instance already exists, then the current existing instance is returned     *
      * @return an instance of MemAppender
      */
-    public static MemAppender getInstance(List _list, String _pattern) {
+    public static MemAppender getInstance(List _list, Layout _layout) {
         if (single_instance == null) {
-            single_instance = new MemAppender(_list, _pattern);
+            single_instance = new MemAppender(_list, _layout);
         }
         return single_instance;
     }
-
 
     protected void append(LoggingEvent loggingEvent) {
         if(logEntries.size() >= maxSize) {
@@ -45,6 +44,10 @@ public class MemAppender extends AppenderSkeleton {
             numberOfDiscardedLogs += 1;
         }
         logEntries.add(loggingEvent);
+    }
+
+    public void clear() {
+        single_instance = null;
     }
 
     /**
