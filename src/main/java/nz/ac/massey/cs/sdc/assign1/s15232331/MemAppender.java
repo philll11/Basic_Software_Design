@@ -46,8 +46,8 @@ public class MemAppender extends AppenderSkeleton {
         logEntries.add(loggingEvent);
     }
 
-    public void clear() {
-        single_instance = null;
+    public void clear(List _list, Layout _layout) {
+        single_instance = new MemAppender(_list, _layout);
     }
 
     /**

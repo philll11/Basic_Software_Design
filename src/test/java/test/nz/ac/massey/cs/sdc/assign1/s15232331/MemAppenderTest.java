@@ -1,7 +1,5 @@
 /**
- * Is getInstanceTestToVerifyOnlyOneInstanceIsCreated() correctly evaluating whether the when MemAppenders are the same object?
  * How do we test using different Appenders
- * I have junit dependacies in my pom.xml file, is that allowed?
  * In StressTest.java, do we have to include assertEquals statements for each test to be valid?
  * In StressTest.java, how do we reset MemAppender each time we run a test
  */
@@ -24,7 +22,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class MemAppenderTest {
 
@@ -33,9 +30,17 @@ public class MemAppenderTest {
 
     @Before
     public void setUp() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        Field instance = MemAppender.class.getDeclaredField("single_instance");
-        instance.setAccessible(true);
-        instance.set(null, null);
+        memAppenderWithArrayList.clear(
+                new ArrayList(),
+                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
+        );
+        memAppenderWithLinkedList.clear(
+                new LinkedList(), new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
+        );
+
+//        Field instance = MemAppender.class.getDeclaredField("single_instance");
+//        instance.setAccessible(true);
+//        instance.set(null, null);
     }
 
     @After
@@ -55,11 +60,7 @@ public class MemAppenderTest {
                 )
         );
 
-        int hc1 = memAppenderFirstInstance.hashCode();
-        int hc2 = memAppenderFirstInstance.hashCode();
-
-        assertTrue(memAppenderFirstInstance.equals(memAppenderSecondInstance)
-                && memAppenderFirstInstance.hashCode() == memAppenderSecondInstance.hashCode());
+        assertEquals(memAppenderFirstInstance, memAppenderSecondInstance);
     }
 
     @Test

@@ -22,9 +22,17 @@ public class StressTest {
 
     @Before
     public void setUp() throws Exception {
-        Field instance = MemAppender.class.getDeclaredField("single_instance");
-        instance.setAccessible(true);
-        instance.set(null, null);
+        memAppenderWithArrayList.clear(
+                new ArrayList(),
+                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
+        );
+        memAppenderWithLinkedList.clear(
+                new LinkedList(), new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
+        );
+
+//        Field instance = MemAppender.class.getDeclaredField("single_instance");
+//        instance.setAccessible(true);
+//        instance.set(null, null);
     }
 
     @After
@@ -32,7 +40,8 @@ public class StressTest {
     }
 
     @Test
-    public void linkedListStreetTest() {
+    public void linkedListStreetTest() throws InterruptedException {
+        Thread.sleep(5000);
         logger = Logger.getLogger("LinkedListAppendLogger");
         memAppenderWithLinkedList = MemAppender.getInstance(
                 new LinkedList(),
@@ -49,12 +58,12 @@ public class StressTest {
     @Test
     public void arrayListStreetTest() {
         logger = Logger.getLogger("ArrayListAppendLogger");
-        memAppenderWithLinkedList = MemAppender.getInstance(
+        memAppenderWithArrayList = MemAppender.getInstance(
                 new ArrayList(),
                 new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
         );
 
-        logger.addAppender(memAppenderWithLinkedList);
+        logger.addAppender(memAppenderWithArrayList);
 
         for(int i = 0; i < 1000; ++i) {
             logger.warn("Warn Message");
@@ -117,15 +126,5 @@ public class StressTest {
         for(int i = 0; i < 1000; ++i) {
             logger.warn("Warn Message");
         }
-    }
-
-    @Test
-    public void beforeMaxSizeIsReachedTest() {
-
-    }
-
-    @Test
-    public void afterMaxSizeIsReachedTest() {
-
     }
 }
