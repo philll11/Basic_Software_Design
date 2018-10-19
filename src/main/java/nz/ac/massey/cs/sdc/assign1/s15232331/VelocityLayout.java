@@ -8,7 +8,6 @@ import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 
 import java.io.StringWriter;
-import java.util.Properties;
 
 public class VelocityLayout extends Layout {
 
@@ -17,6 +16,12 @@ public class VelocityLayout extends Layout {
     private VelocityContext velocityContext;
     private StringWriter stringWriter;
     private String pattern;
+
+    public VelocityLayout() {
+        this.velocityContext = new VelocityContext();
+        this.stringWriter = new StringWriter();
+        this.pattern = "[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}";
+    }
 
     public VelocityLayout(String _pattern) {
         this.velocityContext = new VelocityContext();

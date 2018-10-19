@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -16,12 +17,13 @@ import static org.junit.Assert.*;
 
 public class StressTest {
 
-    private MemAppender memAppenderWithArrayList, memAppenderWithLinkedList;
+    private final String LOG_CLASS_PATH = "src\\test\\resources\\logs.txt";
+
     private Logger logger;
-    private VelocityLayout layout;
 
     @Before
     public void setUp() throws Exception {
+        Thread.sleep(5_000);
         Field instance = MemAppender.class.getDeclaredField("single_instance");
         instance.setAccessible(true);
         instance.set(null, null);
@@ -32,32 +34,32 @@ public class StressTest {
     }
 
     @Test
-    public void linkedListStreetTest() {
+    public void linkedListStreetTest() throws InterruptedException {
         logger = Logger.getLogger("LinkedListAppendLogger");
-        memAppenderWithLinkedList = MemAppender.getInstance(
-                new LinkedList(),
-                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
+
+        logger.addAppender(
+                MemAppender.getInstance(
+                        new LinkedList()
+                )
         );
 
-        logger.addAppender(memAppenderWithLinkedList);
-
-        for(int i = 0; i < 1000; ++i) {
-            logger.warn("Warn Message");
+        for(int i = 0; i < 100; ++i) {
+            logger.warn("linkedListStreetTest");
         }
     }
 
     @Test
     public void arrayListStreetTest() {
         logger = Logger.getLogger("ArrayListAppendLogger");
-        memAppenderWithLinkedList = MemAppender.getInstance(
-                new ArrayList(),
-                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
+
+        logger.addAppender(
+                MemAppender.getInstance(
+                        new LinkedList()
+                )
         );
 
-        logger.addAppender(memAppenderWithLinkedList);
-
-        for(int i = 0; i < 1000; ++i) {
-            logger.warn("Warn Message");
+        for(int i = 0; i < 100; ++i) {
+            logger.warn("arrayListStreetTest");
         }
     }
 
@@ -66,24 +68,28 @@ public class StressTest {
         BasicConfigurator.configure();
         logger = Logger.getLogger("ConsoleAppendLogger");
 
-        for(int i = 0; i < 1000; ++i) {
-            logger.warn("Warn Message");
+        for(int i = 0; i < 100; ++i) {
+            logger.warn("consoleAppenderStressTest");
         }
     }
 
     @Test
     public void fileAppenderStressTest() throws IOException {
+        PrintWriter writer = new PrintWriter(LOG_CLASS_PATH);
+        writer.print("");
+        writer.close();
+
         logger = Logger.getLogger("fileAppendLogger");
 
         logger.addAppender(
                 new FileAppender(
-                        new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}"),
-                        "src\\test\\resources\\logs.txt"
+                        new VelocityLayout(),
+                        LOG_CLASS_PATH
                 )
         );
 
-        for(int i = 0; i < 1000; ++i) {
-            logger.warn("Warn Message");
+        for(int i = 0; i < 100; ++i) {
+            logger.warn("fileAppenderStressTest");
         }
     }
 
@@ -94,12 +100,12 @@ public class StressTest {
 
         logger.addAppender(
                 new ConsoleAppender(
-                        new PatternLayout("[%t | %p]: %c | Occurred at: %d | Log Message: %m %n")
+                        new PatternLayout()
                 )
         );
 
-        for(int i = 0; i < 1000; ++i) {
-            logger.warn("Warn Message");
+        for(int i = 0; i < 100; ++i) {
+            logger.warn("patternLayoutStressTest");
         }
     }
 
@@ -110,22 +116,13 @@ public class StressTest {
 
         logger.addAppender(
                 new ConsoleAppender(
-                        new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
+                        new VelocityLayout()
                 )
         );
 
-        for(int i = 0; i < 1000; ++i) {
-            logger.warn("Warn Message");
+        for(int i = 0; i < 100; ++i) {
+            logger.warn("velocityLayoutStressTest");
         }
     }
 
-    @Test
-    public void beforeMaxSizeIsReachedTest() {
-
-    }
-
-    @Test
-    public void afterMaxSizeIsReachedTest() {
-
-    }
 }

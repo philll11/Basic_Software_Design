@@ -1,7 +1,5 @@
 /**
- * Is getInstanceTestToVerifyOnlyOneInstanceIsCreated() correctly evaluating whether the when MemAppenders are the same object?
  * How do we test using different Appenders
- * I have junit dependacies in my pom.xml file, is that allowed?
  * In StressTest.java, do we have to include assertEquals statements for each test to be valid?
  * In StressTest.java, how do we reset MemAppender each time we run a test
  */
@@ -11,65 +9,62 @@ package test.nz.ac.massey.cs.sdc.assign1.s15232331;
 
 import nz.ac.massey.cs.sdc.assign1.s15232331.MemAppender;
 import nz.ac.massey.cs.sdc.assign1.s15232331.VelocityLayout;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.log4j.*;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.RootLogger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class MemAppenderTest {
 
-    private MemAppender memAppenderWithArrayList, memAppenderWithLinkedList;
+    private final String LOG_CLASS_PATH = "src\\test\\resources\\logs.txt";
+
+    private MemAppender memAppenderWithArrayList;
     private Logger logger, rootLogger;
 
     @Before
-    public void setUp() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+    public void setUp() throws NoSuchFieldException, IllegalAccessException {
         Field instance = MemAppender.class.getDeclaredField("single_instance");
         instance.setAccessible(true);
         instance.set(null, null);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
+        memAppenderWithArrayList = null;
+        logger = null;
+        rootLogger = null;
     }
 
     @Test
     public void getInstanceTestToVerifyOnlyOneInstanceIsCreated() {
         MemAppender memAppenderFirstInstance = MemAppender.getInstance(
-                new ArrayList(),
-                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}"
-                )
+                new ArrayList()
         );
         MemAppender memAppenderSecondInstance = MemAppender.getInstance(
-                new ArrayList(),
-                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}"
-                )
+                new ArrayList()
         );
 
-        int hc1 = memAppenderFirstInstance.hashCode();
-        int hc2 = memAppenderFirstInstance.hashCode();
-
-        assertTrue(memAppenderFirstInstance.equals(memAppenderSecondInstance)
-                && memAppenderFirstInstance.hashCode() == memAppenderSecondInstance.hashCode());
+        assertEquals(memAppenderFirstInstance, memAppenderSecondInstance);
     }
 
     @Test
     public void linkedListCapabilitiesTest() {
         logger = Logger.getLogger("AppendLogger");
-        memAppenderWithLinkedList = MemAppender.getInstance(
-                new LinkedList(),
-                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
+        MemAppender memAppenderWithLinkedList = MemAppender.getInstance(
+                new LinkedList()
         );
-
         logger.addAppender(memAppenderWithLinkedList);
 
         logger.warn("Warn Message");
@@ -82,8 +77,7 @@ public class MemAppenderTest {
     public void correctLoggerLevelManagementTest() {
         logger = Logger.getLogger("AppendLogger");
         memAppenderWithArrayList = MemAppender.getInstance(
-                new ArrayList(),
-                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
+                new ArrayList()
         );
 
         logger.addAppender(memAppenderWithArrayList);
@@ -109,10 +103,8 @@ public class MemAppenderTest {
     public void rootLoggerCapabilitiesTest() {
         rootLogger = RootLogger.getRootLogger();
         memAppenderWithArrayList = MemAppender.getInstance(
-                new ArrayList(),
-                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
+                new ArrayList()
         );
-
         rootLogger.addAppender(memAppenderWithArrayList);
 
         rootLogger.warn("Warn Message");
@@ -123,13 +115,36 @@ public class MemAppenderTest {
     }
 
     @Test
+    public void velocityLayoutWithConsoleAppenderTest() throws IOException {
+        PrintWriter writer = new PrintWriter(LOG_CLASS_PATH);
+        writer.print("");
+        writer.close();
+
+        logger = Logger.getLogger("AppendLogger");
+        logger.addAppender(
+                new FileAppender(
+                        new VelocityLayout("Log Message: ${m}"),
+                        LOG_CLASS_PATH
+                )
+        );
+
+        logger.warn("Velocity Layout With Console Appender Test");
+
+        BufferedReader br = new BufferedReader(
+                new FileReader(LOG_CLASS_PATH)
+        );
+        String firstLine = br.readLine();
+
+        assertEquals("Log Message: Velocity Layout With Console Appender Test", firstLine);
+
+    }
+
+    @Test
     public void maxSizeListLimitCorrectImplementationTest() {
         logger = Logger.getLogger("AppendLogger");
         memAppenderWithArrayList = MemAppender.getInstance(
-                new ArrayList(),
-                new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}")
+                new LinkedList()
         );
-
         logger.addAppender(memAppenderWithArrayList);
 
         for(int i = 0; i < 110; ++i) {

@@ -27,7 +27,7 @@ public class VelocityLayoutTest {
 
     @Before
     public void setUp() throws Exception {
-        velocityLayout = new VelocityLayout("[${t} | ${p}]: ${c} | Occurred at: ${d} | Log Message: ${m} ${n}");
+        velocityLayout = new VelocityLayout();
 
         logger = Logger.getLogger("VelocityLayoutTestLogger");
         rootLogger = RootLogger.getRootLogger();
@@ -43,15 +43,6 @@ public class VelocityLayoutTest {
 
     @After
     public void tearDown() throws Exception {
-        velocityLayout = null;
-
-        logger = null;
-        rootLogger = null;
-
-        timeStamp = -1;
-        throwable = null;
-
-        loggingEventDebug = loggingEventInfo = loggingEventError = loggingEventRootLogger = null;
     }
 
     @Test
@@ -79,6 +70,15 @@ public class VelocityLayoutTest {
     public void formatCorrectReturnStringTestWithRootLogger() {
         String expected = "[main | DEBUG]: root | Occurred at: " + timeStamp + " | Log Message: This is a DEBUG log \n";
         String actual = velocityLayout.format(loggingEventRootLogger);
+
+        assertEquals(expected, actual);
+    }
+    @Test
+    public void passingPatternToVelocityLayoutTest() {
+        velocityLayout = new VelocityLayout("[${t} | ${p}]: ${c}");
+
+        String expected = "[main | DEBUG]: VelocityLayoutTestLogger";
+        String actual = velocityLayout.format(loggingEventDebug);
 
         assertEquals(expected, actual);
     }
