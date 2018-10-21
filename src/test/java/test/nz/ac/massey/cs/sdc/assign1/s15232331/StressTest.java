@@ -23,7 +23,6 @@ public class StressTest {
 
     @Before
     public void setUp() throws Exception {
-        Thread.sleep(5_000);
         Field instance = MemAppender.class.getDeclaredField("single_instance");
         instance.setAccessible(true);
         instance.set(null, null);
@@ -31,10 +30,12 @@ public class StressTest {
 
     @After
     public void tearDown() throws Exception {
+        logger = null;
     }
 
     @Test
     public void linkedListStreetTest() throws InterruptedException {
+        Thread.sleep(5_000);
         logger = Logger.getLogger("LinkedListAppendLogger");
 
         logger.addAppender(
@@ -43,13 +44,14 @@ public class StressTest {
                 )
         );
 
-        for(int i = 0; i < 100; ++i) {
+        for(int i = 0; i < 500_000_000; ++i) {
             logger.warn("linkedListStreetTest");
         }
     }
 
     @Test
-    public void arrayListStreetTest() {
+    public void arrayListStreetTest() throws InterruptedException {
+        Thread.sleep(5_000);
         logger = Logger.getLogger("ArrayListAppendLogger");
 
         logger.addAppender(
@@ -58,23 +60,25 @@ public class StressTest {
                 )
         );
 
-        for(int i = 0; i < 100; ++i) {
+        for(int i = 0; i < 500_000_000; ++i) {
             logger.warn("arrayListStreetTest");
         }
     }
 
     @Test
-    public void consoleAppenderStressTest() throws IOException {
+    public void consoleAppenderStressTest() throws InterruptedException {
+        Thread.sleep(15_000);
         BasicConfigurator.configure();
         logger = Logger.getLogger("ConsoleAppendLogger");
 
-        for(int i = 0; i < 100; ++i) {
+        for(int i = 0; i < 5_000_000; ++i) {
             logger.warn("consoleAppenderStressTest");
         }
     }
 
     @Test
-    public void fileAppenderStressTest() throws IOException {
+    public void fileAppenderStressTest() throws IOException, InterruptedException {
+        Thread.sleep(15_000);
         PrintWriter writer = new PrintWriter(LOG_CLASS_PATH);
         writer.print("");
         writer.close();
@@ -88,13 +92,14 @@ public class StressTest {
                 )
         );
 
-        for(int i = 0; i < 100; ++i) {
+        for(int i = 0; i < 100_000; ++i) {
             logger.warn("fileAppenderStressTest");
         }
     }
 
     @Test
-    public void patternLayoutStressTest() {
+    public void patternLayoutStressTest() throws InterruptedException {
+        Thread.sleep(15_000);
         BasicConfigurator.configure();
         logger = Logger.getLogger("ArrayListAppendLogger");
 
@@ -104,13 +109,14 @@ public class StressTest {
                 )
         );
 
-        for(int i = 0; i < 100; ++i) {
+        for(int i = 0; i < 5_000_000; ++i) {
             logger.warn("patternLayoutStressTest");
         }
     }
 
     @Test
-    public void velocityLayoutStressTest() {
+    public void velocityLayoutStressTest() throws InterruptedException {
+        Thread.sleep(15_000);
         BasicConfigurator.configure();
         logger = Logger.getLogger("ArrayListAppendLogger");
 
@@ -120,9 +126,40 @@ public class StressTest {
                 )
         );
 
-        for(int i = 0; i < 100; ++i) {
+        for(int i = 0; i < 5_000_000; ++i) {
             logger.warn("velocityLayoutStressTest");
         }
     }
 
+    @Test
+    public void efficiencyTestingAppendMethodBeforeMAX_SIZE() throws InterruptedException {
+        Thread.sleep(15_000);
+        logger = Logger.getLogger("maxSizeLogger");
+
+        logger.addAppender(
+                MemAppender.getInstance(
+                        new ArrayList()
+                )
+        );
+
+        for(int i = 0; i < 98; ++i) {
+            logger.warn("maxSize Stress Test");
+        }
+    }
+
+    @Test
+    public void efficiencyTestingAppendMethodAfterMAX_SIZE() throws InterruptedException {
+        Thread.sleep(15_000);
+        logger = Logger.getLogger("maxSizeLogger");
+
+        logger.addAppender(
+                MemAppender.getInstance(
+                        new ArrayList()
+                )
+        );
+
+        for(int i = 0; i < 5_000_000; ++i) {
+            logger.warn("maxSize Stress Test");
+        }
+    }
 }

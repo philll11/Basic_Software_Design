@@ -8,6 +8,7 @@ import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 
 import java.io.StringWriter;
+import java.util.Date;
 
 public class VelocityLayout extends Layout {
 
@@ -36,7 +37,7 @@ public class VelocityLayout extends Layout {
         velocityContext.put("p", loggingEvent.getLevel());
         velocityContext.put("t", loggingEvent.getThreadName());
         velocityContext.put("c", loggingEvent.getLoggerName());
-        velocityContext.put("d", loggingEvent.getTimeStamp());
+        velocityContext.put("d", new Date(loggingEvent.getTimeStamp()).toString());
         velocityContext.put("m", loggingEvent.getMessage());
         velocityContext.put("n", "\n");
 

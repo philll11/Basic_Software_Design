@@ -1,11 +1,8 @@
 package nz.ac.massey.cs.sdc.assign1.s15232331;
 
-// How do we test our code?
-
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,20 +10,19 @@ import java.util.List;
  * exceptions in a concise and manageable manner
  */
 public class MemAppender extends AppenderSkeleton {
+    private final int MAX_SIZE = 100;
+
     private static MemAppender single_instance = null;
     private List<LoggingEvent> logEntries;
-    private int maxSize;
     private int numberOfDiscardedLogs;
 
     private MemAppender(List _list) {
         this.logEntries = _list;
-        this.maxSize = 100;
         this.numberOfDiscardedLogs = 0;
     }
     private MemAppender(List _list, Layout _layout) {
         this.logEntries = _list;
         this.layout = _layout;
-        this.maxSize = 100;
         this.numberOfDiscardedLogs = 0;
     }
 
@@ -43,7 +39,7 @@ public class MemAppender extends AppenderSkeleton {
     }
 
     protected void append(LoggingEvent loggingEvent) {
-        if(logEntries.size() >= maxSize) {
+        if(logEntries.size() >= MAX_SIZE) {
             logEntries.remove(0);
             numberOfDiscardedLogs += 1;
         }

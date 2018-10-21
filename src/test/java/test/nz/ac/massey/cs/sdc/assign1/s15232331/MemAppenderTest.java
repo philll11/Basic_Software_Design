@@ -1,10 +1,3 @@
-/**
- * How do we test using different Appenders
- * In StressTest.java, do we have to include assertEquals statements for each test to be valid?
- * In StressTest.java, how do we reset MemAppender each time we run a test
- */
-
-
 package test.nz.ac.massey.cs.sdc.assign1.s15232331;
 
 import nz.ac.massey.cs.sdc.assign1.s15232331.MemAppender;
